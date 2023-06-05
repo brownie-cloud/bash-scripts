@@ -56,9 +56,27 @@ create_resource_group () {
     az group create -g $resource_group -l $selected_region | grep provisioningState
 }
 
-#List all resource groups
+# List all resource groups
 list_resource_groups() {
     az group list -o table
+}
+
+# Check if the VM already exists.
+check_vm () {
+    while true; do
+        read -p "Enter a name for your virtual machine: " vm_name
+        if [ $(az vm exists --name $vm_name) = true ]; then 
+            echo "The vm $vm_name exists in $resource_group, please provide another name..."
+        else
+            break
+        fi
+    done
+}
+
+# Create the virtual machine
+create_virtual_machine () {
+    echo "Creating virtual machine: $vm_name in $selected_region"
+    az vm create -g $resource_group -n $vm_name -i debian -l $selected_region --public-ip-sku Standard | grep provisioningState
 }
 
 # setup
@@ -66,3 +84,5 @@ check_region
 check_resource_group 
 create_resource_group
 list_resource_groups
+check_vm
+create_virtual_machine
