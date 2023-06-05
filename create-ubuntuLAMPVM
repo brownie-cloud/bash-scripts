@@ -76,7 +76,7 @@ check_vm () {
 # Create the virtual machine
 create_virtual_machine () {
     echo "Creating virtual machine: $vm_name in $selected_region"
-    az vm create -g $resource_group -n $vm_name -i debian -l $selected_region --public-ip-sku Standard | grep provisioningState
+    az vm create -g $resource_group -n $vm_name -i UbuntuTLS -l $selected_region --public-ip-sku Standard | grep provisioningState
 }
 
 # setup
