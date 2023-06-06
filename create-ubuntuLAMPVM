@@ -12,7 +12,7 @@ PUBLISHER=canonical
 
 # Create resource group
 create_resource_group() {
-   echo "Creating resouce group: $RESOURCE_GROUP_NAME in $LOCATION"
+   echo "Creating resource group: $RESOURCE_GROUP_NAME in $LOCATION"
    az group create --name $RESOURCE_GROUP_NAME --location $LOCATION | grep provisioningState 
 }
 
@@ -22,7 +22,7 @@ list_resource_groups() {
 }
 
 # Create the virtual machine
-create_virtual_machine () {
+create_virtual_machine() {
     echo "Creating virtual machine: $VM_NAME in $LOCATION"
     az vm create -g $RESOURCE_GROUP_NAME -n $VM_NAME --image $VM_IMAGE --admin-username $ADMIN_USERNAME --generate-ssh-keys -l $LOCATION --public-ip-sku Standard | grep provisioningState
 }
@@ -34,7 +34,7 @@ open_port_80() {
 
 # SSH into the virtual machine
 ssh_into_vm() {
-    VM_IP_ADDRESS=$(az vm show --name $VM_NAME --resource-group $RESOURCE_GROUP_NAME --query 'publicIps' --output tsv)
+    VM_IP_ADDRESS=$(az network public-ip list --resource-group $RESOURCE_GROUP_NAME --query "[].ipAddress" --output tsv)
     echo "VM IP Address: $VM_IP_ADDRESS"
     ssh $ADMIN_USERNAME@$VM_IP_ADDRESS
 }
