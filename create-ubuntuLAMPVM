@@ -1,59 +1,19 @@
 #!/bin/bash
 
-# A script that will create a resource group in Azure
+# A script that will create an Ubuntu VM in Azure
 
-setup() { 
-    # Install az cli
-    curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-    # Login
-    az login --use-device-code
-    echo "You're logged in."
-}
+# Define variables that will be used in the create vm function
+RESOURCE_GROUP_NAME=ubuntuVM
+LOCATION=eastus
+VM_NAME=ubuntu
+VM_IMAGE= 0001-com-ubuntu-minimal-lunar
+ADMIN_USERNAME=azureuser
+PUBLISHER=canonical
 
-# Print out 5 recommended regions
-print_out_regions() {
-    regions_array=($( az account list-locations --query "[?metadata.regionCategory=='Recommended'].{Name:name}" -o tsv | head -n 5))
-    for i in "${regions_array[@]}"
-    do
-       echo "$i"
-    done
-}
-
-# Select a region
-check_region() {
-    local region_exists=false
-    while [[ "$region_exists" = false ]];  do
-        print_out_regions
-        read -p "Enter your region: " selected_region
-        for j in "${regions_array[@]}"
-        do
-            if [[ "$selected_region" == "$j" ]]; then
-                region_exists=true
-                echo "Region exists"
-                break
-            else
-                continue
-            fi
-        done
-    done
-}
-
-# Check if resource group already exists.
-check_resource_group () {
-    while true; do
-        read -p "Enter a name for you resource group: " resource_group
-        if [ $(az group exists --name $resource_group) = true ]; then 
-            echo "The group $resource_group exists in $selected_region, please provide another name..."
-        else
-            break
-        fi
-    done
-}
-
-# Create the resource group
-create_resource_group () {
-    echo "Creating resource group: $resource_group in $selected_region"
-    az group create -g $resource_group -l $selected_region | grep provisioningState
+# Create resource group
+create_resource_group() {
+   echo "Creating resouce group: $RESOURCE_GROUP_NAME in $LOCATION"
+   az group create --name $RESOURCE_GROUP_NAME --location $LOCATION | grep provisioningState 
 }
 
 # List all resource groups
@@ -61,28 +21,13 @@ list_resource_groups() {
     az group list -o table
 }
 
-# Check if the VM already exists.
-check_vm () {
-    while true; do
-        read -p "Enter a name for your virtual machine: " vm_name
-        if [ $(az vm exists --name $vm_name) = true ]; then 
-            echo "The vm $vm_name exists in $resource_group, please provide another name..."
-        else
-            break
-        fi
-    done
-}
-
 # Create the virtual machine
 create_virtual_machine () {
-    echo "Creating virtual machine: $vm_name in $selected_region"
-    az vm create -g $resource_group -n $vm_name -i UbuntuTLS -l $selected_region --public-ip-sku Standard | grep provisioningState
+    echo "Creating virtual machine: $VM_NAME in $$LOCATION"
+    az vm create -g $RESOURCE_GROUP_NAME -n $VM_NAME --image $VM_IMAGE --admin-username $ADMIN_USERNAME --generate-ssh-keys -l $LOCATION --public-ip-sku Standard | grep provisioningState
 }
 
-# setup
-check_region
-check_resource_group 
+
 create_resource_group
 list_resource_groups
-check_vm
 create_virtual_machine
