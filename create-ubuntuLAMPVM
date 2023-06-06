@@ -6,7 +6,7 @@
 RESOURCE_GROUP_NAME=ubuntuVM
 LOCATION=eastus
 VM_NAME=ubuntu
-VM_IMAGE=0001-com-ubuntu-minimal-lunar
+VM_IMAGE=UbuntuLTS
 ADMIN_USERNAME=azureuser
 PUBLISHER=canonical
 
