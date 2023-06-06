@@ -32,43 +32,20 @@ open_port_80() {
     az vm open-port --port 80 --resource-group $RESOURCE_GROUP_NAME --name $VM_NAME
 }
 
-# SSH into the virtual machine
-ssh_into_vm() {
+# SSH into the virtual machine and install LAMP stack
+install_lamp_and_verify() {
     VM_IP_ADDRESS=$(az network public-ip list --resource-group $RESOURCE_GROUP_NAME --query "[].ipAddress" --output tsv)
     echo "VM IP Address: $VM_IP_ADDRESS"
-    ssh $ADMIN_USERNAME@$VM_IP_ADDRESS
-}
 
-# Install Apache, MySQL, PHP (LAMP)
-install_lamp() {
-    # Disable ESM repository temporarily
-    sudo sed -i 's/^deb/#deb/' /etc/apt/sources.list.d/ubuntu-esm-infra*.list
-
-    # Update system packages
-    sudo apt-get update
-    sudo apt-get -y upgrade
-
-    # Install LAMP stack
-    sudo apt-get -y install apache2 mysql-server php libapache2-mod-php php-mysql
-
-    # Restart Apache
-    sudo systemctl restart apache2
-
-    # Verify installation
-    apache2 -v
-    mysql -V
-    php -v
-
-    # Enable ESM repository again
-    sudo sed -i 's/^#deb/deb/' /etc/apt/sources.list.d/ubuntu-esm-infra*.list
-}
-
-# Verify and secure Apache, MySQL, PHP
-verify_apache_mysql() {
-    apache2 -v
-    mysql -V
-    sudo mysql_secure_installation
-    php -v
+    ssh -t $ADMIN_USERNAME@$VM_IP_ADDRESS "
+        sudo apt-get update &&
+        sudo apt-get -y upgrade &&
+        sudo apt-get -y install apache2 mysql-server php libapache2-mod-php php-mysql &&
+        sudo systemctl restart apache2 &&
+        apache2 -v &&
+        mysql -V &&
+        php -v
+    "
 }
 
 # Uncomment the required functions to execute
@@ -76,6 +53,4 @@ verify_apache_mysql() {
 #list_resource_groups
 #create_virtual_machine
 #open_port_80
-ssh_into_vm
-install_lamp
-verify_apache_mysql
+install_lamp_and_verify
