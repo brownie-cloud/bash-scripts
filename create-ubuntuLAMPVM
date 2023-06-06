@@ -33,8 +33,8 @@ open_port_80() {
 }
 
 ssh_into_vm() {
-    IP_ADDRESS=($(az network public-ip list --resource-group $RESOURCE_GROUP_NAME --query [].ipAddress))
-    ssh azureuser@$IP_ADDRESS
+    VM_IP_ADDRESS=$(az vm show --name $VM_NAME --resource-group $RESOURCE_GROUP_NAME --query 'publicIps' --output tsv)
+    ssh azureuser@$VM_IP_ADDRESS
 }
 
 #Install Apache, MySQL, PHP (LAMP)
@@ -50,10 +50,10 @@ verify_apache_mysql() {
     php -v
 }
 
-create_resource_group
-list_resource_groups
-create_virtual_machine
-open_port_80
+#create_resource_group
+#list_resource_groups
+#create_virtual_machine
+#open_port_80
 ssh_into_vm
 install_lamp
 verify_apache_mysql
