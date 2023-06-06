@@ -27,7 +27,33 @@ create_virtual_machine () {
     az vm create -g $RESOURCE_GROUP_NAME -n $VM_NAME --image $VM_IMAGE --admin-username $ADMIN_USERNAME --generate-ssh-keys -l $LOCATION --public-ip-sku Standard | grep provisioningState
 }
 
+#Open port 80 for web traffic
+open_port_80() {
+    az vm open-port --port 80 --resource-group $RESOURCE_GROUP_NAME --name $VM_NAME
+}
+
+ssh_into_vm() {
+    IP_ADDRESS=($(az network public-ip list --resource-group $RESOURCE_GROUP_NAME --query [].ipAddress))
+    ssh azureuser@$IP_ADDRESS
+}
+
+#Install Apache, MySQL, PHP (LAMP)
+install_lamp() {
+    sudo apt update && sudo apt install lamp-server^
+}
+
+#Verify and secure Apache, MySQl, pHP
+verify_apache_mysql() {
+    apache2 -v
+    mysql -V
+    sudo mysql_secure_installation
+    php -v
+}
 
 create_resource_group
 list_resource_groups
 create_virtual_machine
+open_port_80
+ssh_into_vm
+install_lamp
+verify_apache_mysql
