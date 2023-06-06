@@ -36,7 +36,7 @@ open_port_80() {
 ssh_into_vm() {
     VM_IP_ADDRESS=$(az vm show --name $VM_NAME --resource-group $RESOURCE_GROUP_NAME --query 'publicIps' --output tsv)
     echo "VM IP Address: $VM_IP_ADDRESS"
-    ssh azureuser@$VM_IP_ADDRESS
+    ssh $ADMIN_USERNAME@$VM_IP_ADDRESS
 }
 
 # Install Apache, MySQL, PHP (LAMP)
