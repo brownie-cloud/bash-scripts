@@ -1,4 +1,15 @@
-#! /bin/bash
-echo "Enter name of dir":
-read filename
-mkdir -p $filename
+#!/bin/bash
+
+# Function to spell check a file
+
+
+
+# Prompt the user for a folder
+
+
+
+# Check if the folder exists
+
+
+
+# Iterate over files in the folder
