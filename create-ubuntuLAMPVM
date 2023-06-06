@@ -41,7 +41,22 @@ ssh_into_vm() {
 
 # Install Apache, MySQL, PHP (LAMP)
 install_lamp() {
-    sudo apt update && sudo apt install lamp-server^
+    # Disable ESM repository
+    sudo apt-get -y remove --purge ubuntu-advantage-tools
+    sudo apt-get -y autoremove --purge
+    sudo rm /etc/apt/sources.list.d/ubuntu-esm-infra*.list
+
+    # Install LAMP stack
+    sudo apt-get update
+    sudo apt-get -y install apache2 mysql-server php libapache2-mod-php php-mysql
+
+    # Restart Apache
+    sudo systemctl restart apache2
+
+    # Verify installation
+    apache2 -v
+    mysql -V
+    php -v
 }
 
 # Verify and secure Apache, MySQL, PHP
