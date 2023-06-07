@@ -3,17 +3,17 @@
 # A script that will create an Ubuntu VM in Azure
 
 # Define variables that will be used in the create vm function
-RESOURCE_GROUP_NAME=ubuntuVM
-LOCATION=eastus
-VM_NAME=ubuntu
-VM_IMAGE=UbuntuLTS
-ADMIN_USERNAME=azureuser
-PUBLISHER=canonical
+resource_group_name=ubuntuVM
+location=eastus2  # Change to a region with lower pricing
+vm_name=ubuntu
+vm_image=UbuntuLTS
+admin_username=azureuser
+publisher=canonical
 
 # Create resource group
 create_resource_group() {
-   echo "Creating resource group: $RESOURCE_GROUP_NAME in $LOCATION"
-   az group create --name $RESOURCE_GROUP_NAME --location $LOCATION | grep provisioningState 
+   echo "Creating resource group: $resource_group_name in $location"
+   az group create --name $resource_group_name --location $location | grep provisioningState 
 }
 
 # List all resource groups
@@ -23,21 +23,21 @@ list_resource_groups() {
 
 # Create the virtual machine
 create_virtual_machine() {
-    echo "Creating virtual machine: $VM_NAME in $LOCATION"
-    az vm create -g $RESOURCE_GROUP_NAME -n $VM_NAME --image $VM_IMAGE --admin-username $ADMIN_USERNAME --generate-ssh-keys -l $LOCATION --public-ip-sku Standard | grep provisioningState
+    echo "Creating virtual machine: $vm_name in $location"
+    az vm create -g $resource_group_name -n $vm_name --image $vm_image --admin-username $admin_username --generate-ssh-keys -l $location --public-ip-sku Standard --size Standard_B1s | grep provisioningState
 }
 
 # Open port 80 for web traffic
 open_port_80() {
-    az vm open-port --port 80 --resource-group $RESOURCE_GROUP_NAME --name $VM_NAME
+    az vm open-port --port 80 --resource-group $resource_group_name --name $vm_name
 }
 
 # SSH into the virtual machine and install LAMP stack
 install_lamp_and_verify() {
-    VM_IP_ADDRESS=$(az network public-ip list --resource-group $RESOURCE_GROUP_NAME --query "[].ipAddress" --output tsv)
-    echo "VM IP Address: $VM_IP_ADDRESS"
+    vm_ip_address=$(az network public-ip list --resource-group $resource_group_name --query "[].ipAddress" --output tsv)
+    echo "VM IP Address: $vm_ip_address"
 
-    ssh -t $ADMIN_USERNAME@$VM_IP_ADDRESS "
+    ssh -t $admin_username@$vm_ip_address "
         sudo apt-get update &&
         sudo apt-get -y upgrade &&
         sudo apt-get -y install apache2 mysql-server php libapache2-mod-php php-mysql &&
