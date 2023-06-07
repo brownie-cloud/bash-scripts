@@ -49,8 +49,8 @@ install_lamp_and_verify() {
 }
 
 # Uncomment the required functions to execute
-#create_resource_group
-#list_resource_groups
-#create_virtual_machine
-#open_port_80
+create_resource_group
+list_resource_groups
+create_virtual_machine
+open_port_80
 install_lamp_and_verify
