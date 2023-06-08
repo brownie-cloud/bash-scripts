@@ -4,11 +4,12 @@
 
 # Function to spell check a file
 spell_check_file(){
+    file="1"
     # Prompt the user for a folder
-    read -p "Enter a folder name" $folder
+    read -p "Enter a folder name: " $folder
 
     # Check if the folder exists
-    if [ ! -d folder ]
+    if [ ! -d $folder ]
     then
         echo "Folder does not exist."
         exit 9999
